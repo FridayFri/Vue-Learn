@@ -4,17 +4,25 @@
   <h1>{{ greetings }}</h1>
   <h1>{{ x }}</h1>
   <h1>{{ y }}</h1>
+  <h1 v-if="loading">Loading</h1>
+  <img v-if="loaded" :src="result.message" >
   <button @click="updateGreeting">+++</button>
 </template>
 
 <script lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import useMousePosition from "./hooks/useMousePosition";
+import useURLLoader from "./hooks/useURLLoader";
 interface DataProps {
   count: number;
   increase: () => void;
   double: number;
 }
+interface DogResult{
+  message:string
+  status:string
+}
+
 
 export default {
   name: "App",
@@ -31,7 +39,9 @@ export default {
       greetings.value += "Hello!";
     };
     const { x, y } = useMousePosition();
-
+    const { result, loading, loaded } = useURLLoader<DogResult>(
+      "https://dog.ceo/api/breeds/image/random"
+    );
     watch(greetings, (newValue, oldValue) => {
       document.title = greetings.value;
     });
@@ -41,6 +51,9 @@ export default {
       updateGreeting,
       x,
       y,
+      result,
+      loading,
+      loaded,
     };
   },
 };
