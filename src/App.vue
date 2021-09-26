@@ -5,7 +5,9 @@
   <h1>{{ x }}</h1>
   <h1>{{ y }}</h1>
   <h1 v-if="loading">Loading</h1>
-  <img v-if="loaded" :src="result.message" >
+  <Moadl :isOpen="modalIsOpen" @close-modal="openModalClose">My Modal</Moadl>
+  <button @click="openModal">Modal</button>
+  <img v-if="loaded" :src="result.message" />
   <button @click="updateGreeting">+++</button>
 </template>
 
@@ -13,19 +15,22 @@
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import useMousePosition from "./hooks/useMousePosition";
 import useURLLoader from "./hooks/useURLLoader";
+import Moadl from "./components/Modal.vue";
 interface DataProps {
   count: number;
   increase: () => void;
   double: number;
 }
-interface DogResult{
-  message:string
-  status:string
+interface DogResult {
+  message: string;
+  status: string;
 }
-
 
 export default {
   name: "App",
+  components: {
+    Moadl,
+  },
   setup() {
     const data: DataProps = reactive({
       count: 0,
@@ -45,6 +50,13 @@ export default {
     watch(greetings, (newValue, oldValue) => {
       document.title = greetings.value;
     });
+    const modalIsOpen = ref(false);
+    const openModal = () => {
+      modalIsOpen.value = true;
+    };
+    const openModalClose = () => {
+      modalIsOpen.value = false;
+    };
     return {
       data,
       greetings,
@@ -54,6 +66,9 @@ export default {
       result,
       loading,
       loaded,
+      openModal,
+      modalIsOpen,
+      openModalClose,
     };
   },
 };
